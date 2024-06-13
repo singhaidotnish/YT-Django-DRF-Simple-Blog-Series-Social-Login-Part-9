@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axiosInstance from '../../axios/login';
 import { useHistory } from 'react-router-dom';
 import FbLogin from 'react-facebook-login';
+import GoogleLogin from 'react-google-login';
 import FacebookLogin from '../../axios/facebookLogin';
 //MaterialUI
 import Avatar from '@material-ui/core/Avatar';
@@ -44,6 +45,31 @@ export default function SignIn() {
 	});
 
 	const [formData, updateFormData] = useState(initialFormData);
+
+// google handles
+    const handleFailure = (result) => {
+        alert(result);
+    };
+
+    const handleLogin = async (googleData) => {
+        const res = await fetch('/api/google-login', {
+            method: 'POST',
+            body: JSON.stringify({
+                token: googleData.tokenId,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await res.json();
+        setLoginData(data);
+        localStorage.setItem('loginData', JSON.stringify(data));
+    };
+    const handleLogout = () => {
+        localStorage.removeItem('loginData');
+        setLoginData(null);
+    };
 
 	const handleChange = (e) => {
 		updateFormData({
@@ -131,6 +157,13 @@ export default function SignIn() {
 						fields="name,email,picture"
 						callback={responseFacebook}
 					/>
+                    <GoogleLogin
+                      clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+                      buttonText="Log in with Google"
+                      onSuccess={handleLogin}
+                      onFailure={handleFailure}
+                      cookiePolicy={'single_host_origin'}
+                    ></GoogleLogin>
 					<Grid container>
 						<Grid item xs>
 							<Link href="#" variant="body2">
