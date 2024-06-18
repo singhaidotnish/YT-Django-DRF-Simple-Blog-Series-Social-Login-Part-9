@@ -38,6 +38,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignIn() {
+    const [loginData, setLoginData] = useState(
+        localStorage.getItem('loginData')
+        ? JSON.parse(localStorage.getItem('loginData'))
+        : null
+    );
+
 	const history = useHistory();
 	const initialFormData = Object.freeze({
 		email: '',
